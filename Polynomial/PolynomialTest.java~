@@ -1,0 +1,253 @@
+import junit.framework.*;
+public class PolynomialTest extends TestCase{
+  private Polynomial test;
+  private Polynomial p;
+  public void setUp(){
+    test = new Polynomial("4 5 3 2 -5 1");
+  }
+  public void testConstructor(){
+    Polynomial a = new Polynomial("0 7 0 6 4 5 0 4 3 2 -5 1");
+    Polynomial b = new Polynomial("4 5 3 4 3 2 -5 0");
+    Polynomial c = new Polynomial(a);
+    assertEquals(3, a.terms());
+    assertEquals(4, b.terms());
+    
+    assertNotNull(test.getFront());
+    assertNotNull(a.getFront().getNext());
+    assertNotNull(b.getFront().getNext().getNext());
+    
+    assertEquals(test.getFront().getExp(), a.getFront().getExp());
+    assertEquals(test.getFront().getCoe(), a.getFront().getCoe());
+    assertEquals(test.getFront().getNext().getExp(), a.getFront().getNext().getExp());
+    assertEquals(test.getFront().getNext().getExp(), a.getFront().getNext().getExp());
+  
+    assertTrue(test.equals(a));
+    assertTrue(c.equals(a));
+    assertTrue(test.equals(new Polynomial("3 2 4 5 -5 1")));
+    assertTrue(test.equals(new Polynomial("-5 1 4 5 3 2")));
+    assertTrue(test.equals(new Polynomial("-5 1 3 2 4 5")));
+    
+    test = new Polynomial("");
+    assertTrue(test.terms() == 0);
+    assertTrue(test.getFront() == null);
+    
+    test = new Polynomial("-5 1 6 2");
+    System.out.println(test.description());
+    System.out.println(new Polynomial("3 2 3 2 -5 1").description());
+    assertTrue(test.equals(new Polynomial("3 2 3 2 -5 1")));
+    assertTrue(test.equals(new Polynomial("3 2 -5 1 3 2")));
+    try{
+      test = new Polynomial("-5 1 3 2 2 -1");
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+    try{
+      test = new Polynomial("-5 -1 3 2");
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+    try{
+      test = new Polynomial("-5 1 3 -1 3 2");
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+  }
+  /**
+   * test method addTerm
+   * case of add term in front - middle - back
+   * also case of throwing exception
+   */ 
+  public void testAddTerm(){
+    test.addTerm(1,5);
+    test.addTerm(1,0);
+    test.addTerm(2,2);
+    test.addTerm(6,6);
+    test.addTerm(2,0);
+    Polynomial expected = new Polynomial("6 6 5 5 5 2 -5 1 3 0");
+    assertTrue(test.equals(expected));
+    test.addTerm(-6,6);
+    expected = new Polynomial("5 5 5 2 -5 1 3 0");
+    assertTrue(test.equals(expected));
+    test.addTerm(-5,2);
+    expected = new Polynomial("5 5 -5 1 3 0");
+    assertTrue(test.terms() == expected.terms());
+    assertTrue(test.equals(expected));
+    try{
+      test.addTerm(1,-1);
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+  }
+  /**
+   * test method deleteTerm
+   * case of delete term in front - middle - back
+   * also case of throwing exception
+   */ 
+  public void testdeleteTerm(){
+    double a = test.deleteTerm(5);
+    Polynomial expected = new Polynomial("3 2 -5 1");
+    assertTrue(test.equals(expected));
+    assertEquals(a, 4.0);
+    
+    test = new Polynomial("4 5 3 2 -5 1");
+    a = test.deleteTerm(2);
+    assertTrue(test.equals(new Polynomial("4 5 -5 1")));
+    assertEquals(a, 3.0);
+    
+    test = new Polynomial("4 5 3 2 -5 1");
+    a = test.deleteTerm(1);
+    assertTrue(test.equals(new Polynomial("4 5 3 2")));
+    assertEquals(a, -5.0);
+    
+    try{
+      test.deleteTerm(-1);
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+  }
+  public void testgetCoefficient(){
+    double a = test.getCoefficient(5);
+    double b = test.getCoefficient(2);
+    double c = test.getCoefficient(1);
+    double d = test.getCoefficient(6);
+    assertEquals(a,4.0);
+    assertEquals(b,3.0);
+    assertEquals(c,-5.0);
+    assertEquals(d,0.0);
+    try{
+      test.getCoefficient(-1);
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+  }
+  public void testevaluate(){
+    double a = test.evaluate(0);    
+    double b = test.evaluate(1);      
+    double c = test.evaluate(2);
+    assertEquals(a,0.0);
+    assertEquals(b,2,0);
+    assertEquals(c,130.0);
+  }
+  public void testderivative(){
+    Polynomial derivative = test.derivative();
+    Polynomial expected = new Polynomial("20 4 6 1 -5 0");
+    Polynomial a = new Polynomial("5 4 6 1 -5 0");
+    Polynomial b = new Polynomial("20 3 6 0");
+    assertTrue(derivative.equals(expected));
+    assertTrue(a.derivative().equals(b));
+  }
+  public void testSum(){
+    Polynomial expected = new Polynomial ("5 3 4 2 3 1 8 0");
+    assertTrue(expected.equals(Polynomial.sum(new Polynomial("2 3 2 2 1 1 4 0"),new Polynomial("3 3 2 2 2 1 4 0"))));
+    assertTrue(test.equals(Polynomial.sum(new Polynomial("3 2 4 1"),new Polynomial("4 5 -9 1"))));
+    assertTrue(expected.equals(Polynomial.sum(new Polynomial(""),new Polynomial("5 3 4 2 3 1 8 0"))));
+    assertTrue(expected.equals(Polynomial.sum(new Polynomial("5 3 4 2 3 1 8 0"),new Polynomial(""))));
+    assertTrue(expected.equals(Polynomial.sum(new Polynomial("4 2"),new Polynomial("5 3 3 1 8 0"))));
+    expected = Polynomial.sum(new Polynomial("4 5 3 2 -5 0"),new Polynomial("1 4 -3 2 -2 0"));
+    assertTrue(new Polynomial("4 5 1 4 -7 0").equals(expected));
+    expected = Polynomial.sum(new Polynomial("-5 0"),new Polynomial("5 0"));
+    assertEquals(0,expected.terms());
+    
+    try{
+      assertTrue(expected.equals(Polynomial.sum(null,new Polynomial("5 3 4 2 3 1 8 0"))));
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+    try{
+      assertTrue(expected.equals(Polynomial.sum(null,new Polynomial("5 3 4 2 3 1 8 0"))));
+      fail("Should've thrown IllegalArgumentException.");
+    }catch(IllegalArgumentException e){
+      // correct
+    }catch(Exception e){
+      fail("Not the expected Exception.");
+    }
+  }
+  public void testProduct(){
+    Polynomial a = new Polynomial("3.6 2 -9 0");
+    Polynomial b = new Polynomial("2.0 2 5 0");
+    assertTrue(Polynomial.product(a,b).equals(new Polynomial("7.2 4 -45.0 0")));
+  }
+  public void testToString() {
+    p = new Polynomial( "2.0 0" );
+    assertEquals( "2.0", p.toString() );
+    p = new Polynomial( "2 0" );
+    assertEquals( "2.0", p.toString() );
+    p = new Polynomial( "2.1 1" );
+    assertEquals( "2.1x", p.toString() );
+    p = new Polynomial( "2.1 2" );
+    assertEquals( "2.1x^2", p.toString() );
+    p = new Polynomial( "2.1 10" );
+    assertEquals( "2.1x^10", p.toString() );
+    p = new Polynomial( "1.0 0" );
+    assertEquals( "1.0", p.toString() );
+    p = new Polynomial( "1.0 1" );
+    assertEquals( "x", p.toString() );
+    p = new Polynomial( "1.0 2" );
+    assertEquals( "x^2", p.toString() );
+    p = new Polynomial( "-1.0 0" );
+    assertEquals( "-1.0", p.toString() );
+    p = new Polynomial( "-1.0 1" );
+    assertEquals( "-x", p.toString() );
+    p = new Polynomial( "-1.0 2" );
+    assertEquals( "-x^2", p.toString() );
+    p = new Polynomial( "1 2 2.1 0" );
+    assertEquals( "x^2 + 2.1", p.toString() );
+    p = new Polynomial( "1 2 -2.1 0" );
+    assertEquals( "x^2 - 2.1", p.toString() );
+    p = new Polynomial( "-1 2 2.1 0" );
+    assertEquals( "-x^2 + 2.1", p.toString() );
+    p = new Polynomial( "-1 2 -2.1 0" );
+    assertEquals( "-x^2 - 2.1", p.toString() );
+    p = new Polynomial( "2.5 3 -1.0 2" );
+    assertEquals( "2.5x^3 - x^2", p.toString() );
+    p = new Polynomial( "2.5 3 -1.0 2 1.0 1 -1.0 0" );
+    assertEquals( "2.5x^3 - x^2 + x - 1.0", p.toString() );
+    p = new Polynomial( "2.5 3 -1 2 1 1 -1 0" );
+    assertEquals( "2.5x^3 - x^2 + x - 1.0", p.toString() );
+    p = new Polynomial( "2.5 3 1 2 -1 1 1 0" );
+    assertEquals( "2.5x^3 + x^2 - x + 1.0", p.toString() );
+    p = new Polynomial( "" );
+    assertEquals( "0.0", p.toString() );
+  }
+  
+  public void testdescription(){
+    String a = "exponent 1, coefficient -5.0\nexponent 2, coefficient 3.0\nexponent 5, coefficient 4.0";
+    assertTrue(test.description().equals(a));
+    
+    test = new Polynomial( "-2 2 5 0" );
+    a = "constant term 5.0\nexponent 2, coefficient -2.0";
+    assertTrue(test.description().equals(a));
+    
+    test =  new Polynomial( "5.4 3 2 1 -5 0" );
+    a = "constant term -5.0\nexponent 1, coefficient 2.0\nexponent 3, coefficient 5.4";
+    assertTrue(test.description().equals(a));
+    
+    test = new Polynomial( "1 3 -1 1" );
+    a = "exponent 1, coefficient -1.0\nexponent 3, coefficient 1.0";
+    assertTrue(test.description().equals(a));  
+    
+    test = new Polynomial("");
+    assertTrue(test.description().equals("0.0"));
+  }
+}

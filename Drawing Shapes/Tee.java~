@@ -1,0 +1,42 @@
+import java.awt.*;
+/**
+ * 
+ * 
+ */ 
+public class Tee extends Shapes{
+  private int thickness;
+  /**
+   * constructor
+   * @param p the point where the shape is drawn
+   * @param height the height of the shape
+   *        height is a multiple of 10.
+   * @param color the color of the shape 
+   */ 
+  public Tee (Point p, int height, Color color){
+    super (p, height, color);
+    thickness = height/5;
+  }
+  /**
+   * 
+   */ 
+  public String toString(){
+    String str = "";
+    
+    return str;
+  }
+  /**
+   * 
+   * true if the point (x,y) is on the Shape, false if not.
+   */
+  public boolean isOn(int x, int y){
+    if(y >= getY() && y <= getY() + getHeight()){
+      if(y >= getY() && y <= getY() + getHeight()/5){
+        if(x >= getX() && x <= getX() + getHeight()) return true;
+      }
+      if(y > getY() + getHeight()/5 && y <= getY() + getHeight()){
+        if(x >= getX() + getHeight()*2/5 && x <= getX() + getHeight()*3/5) return true;
+      }
+    }
+    return false;
+  }
+}

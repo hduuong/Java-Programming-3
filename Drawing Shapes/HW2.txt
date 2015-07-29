@@ -1,0 +1,36 @@
+Duong Chau
+CSC 143 - HW2
+report
+
+1/ start with writing up the interface of the shape, lay out all the methods that a shape should 
+have then. Then write the base class of all shapes, contains most methods that every shape shares.
+the abstract shape class has the instance variable of a Point of a bounding box, color, Height of
+the bounding box and a boolean variable call "selected". It has most of the get/set methods, has 
+ an abstract isOn method, and has the toString method as abstract because different shape has 
+different properties.
+
+2/isOn() method:
+Delta : I use the equation of the line to find the left and right bound, where the x should lie
+between with a y value. And I know the slopes of the 2 lines by solving are 2 and -2 for all height
+the formular : x = (y - apex.y) / slope + apex.x
+
+Circle : I use the equation of the circle to find the left and right bound, where the x should lie
+between with a y value. the radius = to half the height.
+the formular : center.x + (radius^2 - (y - center.y)^2)^(.5);
+               center.x - (radius^2 - (y - center.y)^2)^(.5);
+
+
+Tee : i find the left and right bounds of the tee, upper and lower section. this does not require 
+any fomular. check for the value y given if the x lies between the noundaries.
+
+3/testing: I test my code through the interaction panel. I created the shapes individually and call
+its methods. I found a problem with the isOn method of the Delta. Since I could not found error
+in my algorithm, in order to resolve this problem, I use system.out.println to print all the data 
+related to the equation. I found that I have my parameter is the same as my instance variable,
+which it should not.
+The unresolved problems are there are exceptions being thrown and are not being catched.
+
+4/I learned more about polymorphism, inheritance, understand about interfaces. I get more practice 
+on testing code without visual object. It is worth to finish this assignment.
+
+

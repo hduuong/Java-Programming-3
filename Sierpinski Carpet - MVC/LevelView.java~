@@ -1,0 +1,33 @@
+import java.awt.*;
+import java.util.*;
+import javax.swing.*;
+/**
+ * a text view panel that shows the level of the model
+ * 
+ * @author DUong H Chau
+ * @verion HW4
+ */ 
+public class LevelView extends JPanel implements View{
+  private SierpinskiCarpet model;
+  private JLabel textDisplay;
+  
+  /**
+   * constructor
+   * 
+   */ 
+  public LevelView(SierpinskiCarpet sc){
+    super();
+   
+    this.setPreferredSize(new Dimension(290,50));
+    this.setBorder(BorderFactory.createLineBorder(Color.blue));
+    textDisplay = new JLabel();
+    this.add(textDisplay);
+    
+    model = sc;
+    model.registerViewer(this);
+  }
+  
+  public void levelChanged(){
+    textDisplay.setText("the level of the carpet is: " + model.getLevel());
+  }
+}

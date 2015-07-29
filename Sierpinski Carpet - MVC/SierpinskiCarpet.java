@@ -1,0 +1,147 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.*;
+/**
+ * the model
+ * contrains registered viewers and the state of the square
+ * level of the carpet
+ * 
+ * @author Duong H Chau
+ * @version HW4
+ */ 
+public class SierpinskiCarpet {
+  private ArrayList<View> viewers;
+  private int coordinateX, coordinateY;
+  private int size;
+  private int level;
+  private int numSquare;
+  /**
+   * contructor
+   * assings values to instance variables
+   * @param x the x coordinate
+   * @param y the y coordinate
+   * @param s the size of the square - must be multiple of 3
+   * @param lvl the level of the carpet - cannot be less than 0
+   */ 
+  public SierpinskiCarpet(int x, int y, int s, int lvl){
+    if(lvl < 0 || s % 3 != 0) throw new IllegalArgumentException();
+    
+    viewers = new ArrayList<View>();
+    coordinateX = x;
+    coordinateY = y;
+    size = s;
+    level = lvl;
+    numSquare = 0;
+  }
+  /**
+   * get the x coordinate of the square
+   * @return the x coordinate
+   */ 
+  public int getX(){
+    return coordinateX;
+  }
+  /**
+   * get the y coordinate of the square
+   * @return the y coordinate
+   */ 
+  public int getY(){
+    return coordinateY;
+  }
+  /**
+   * get the level of the square
+   * @return the level
+   */ 
+  public int getLevel(){
+    return level;
+  }
+  /**
+   * get the size of the square
+   * @return the size
+   */ 
+  public int getSize(){
+    return size;
+  }
+  /**
+   * increase the level of the carpet by 1
+   */ 
+  public void lvlUp(){
+    changeLevel(level + 1);
+  }
+  /**
+   * decrease the level of the carpet by 1
+   */ 
+  public void lvlDown(){
+    if(level == 0) return;
+    changeLevel(level - 1);
+  }
+  /**
+   * change the level of the carpet
+   * @param l the new level of the carpet
+   */
+  public void changeLevel(int l){
+    if(l < 0) throw new IllegalArgumentException();
+    level = l;
+    notifyViewer();
+  }
+  /**
+   * add the viewers to the list of viewers
+   * @param v a viewer
+   */ 
+  public void registerViewer(View v){
+    if(v == null) throw new IllegalArgumentException();
+    viewers.add(v);
+    notifyViewer();
+  }
+  /**
+   * a private method that notifies the viewers whenever the 
+   * level of the carpet is changed
+   */ 
+  private void notifyViewer(){
+    Iterator<View> it = viewers.iterator();
+    while(it.hasNext()){
+      View v = it.next();
+      v.levelChanged();
+    }
+  }
+  /**
+   * the public draw method that calls the recursion version
+   * @param g the graphics object
+   */ 
+  public void drawCarpet(Graphics g){
+   
+    numSquare = drawCarpet(g, level, coordinateX, coordinateY, size);
+    notifyViewer();
+  }
+  /**
+   * a recursive method that draw the carpet based on the level
+   * @param g the graphic objects
+   * @param lvl the level of the carpet
+   * @param x the x cooridinate
+   * @param y the y cooridinate
+   * @param s the size of a square
+   * @return an int type value of how many squares there is
+   */ 
+  private int drawCarpet(Graphics g, int lvl, int x, int y, int s){
+    int rects = 0;
+    if(lvl <= 0) return 0;
+    if(lvl == 1){
+      g.fillRect(x,y,s,s);
+      return 1;
+    }else{
+      g.fillRect(x,y,s,s);
+      rects += 1;
+      s = s/3;
+      rects += drawCarpet(g,lvl-1,x-2*s,y-2*s,s);
+      rects += drawCarpet(g,lvl-1,x-2*s,y+s,s);
+      rects += drawCarpet(g,lvl-1,x-2*s,y+4*s,s);
+      
+      rects += drawCarpet(g,lvl-1,x+s,y-2*s,s);
+      rects += drawCarpet(g,lvl-1,x+4*s,y-2*s,s);
+      
+      rects += drawCarpet(g,lvl-1,x+s,y+4*s,s);
+      rects += drawCarpet(g,lvl-1,x+4*s,y+s,s);
+      rects += drawCarpet(g,lvl-1,x+4*s,y+4*s,s);
+    }
+    return rects;
+  }
+}

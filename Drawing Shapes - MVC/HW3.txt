@@ -1,0 +1,35 @@
+Duong H Chau
+CSC 143
+HW3 - report
+
+1/I made a class diagram and roughly sketch the output that I wanted the program to look like after
+completion
+
+2/as the user pressed on the shape, that shape get selected and the boolean type variable set to true
+while dragging, if the variable is true, call the shift method in the drawingboard class. when finish
+dragging, the varibale set to false as the mouse is released.
+
+3/I test my code my running it everytime I make adjustments or add more feature to the design.
+I encounterd serveral simple bugs such as null pointer exception, missing adding listener to panel,
+and logic error when call the shift method.
+There is a small problem when I tried to make the selected shape to be null when clicking on the
+blank space of the panel. The output of the panel works as expected but there is a nullpointer exception.
+
+4/I created a JSlider to move all shape in the Panel. I made 2 slider in the controller- a vertical
+and a horizontal one. Wrote a JsliderListener (implements ChangeListener) class to respond to the 
+changes in the slider - the listener get values from slider and call the moveALL method from the 
+drawingboard. moveALL method also notifies viewrs after it finish.
+
+I made a button to delete a shape. I instantiate the button and but it in a same panel as the other
+three buttons. this send a message to the model that the next clicks will be earasing the shapes.
+
+I made a JcolorChooser to change the color of the selected shape. I Wrote a ColorChooser (extends 
+JPanel implements ChangeListener) class and instantiate it in the controller. Put it in a South
+border of the frame. When ever the user choose a color in the JColorChooser, changeColor method in
+drawingboard is called and sets the color of the selected shape to the chosen color. After set the
+color, it notifies the viewers to update.
+
+5/this a good assigment for getting used to MVC design, it is fun to look at the visual test.
+I learnt how to create Buttons-Frames-Panels-Slider, draw Shapes using graphics object, and different
+kind of Listeners.
+Though this assignment really is a time consuming one, it is worth doing it.

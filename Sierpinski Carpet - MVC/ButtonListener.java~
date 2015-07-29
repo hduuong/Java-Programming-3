@@ -1,0 +1,29 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+/**
+ * a button listener that send the model message on 
+ * increasing or decreasing the level
+ * @author Duong H Chau
+ * @version HW4
+ */ 
+public class ButtonListener implements ActionListener {
+  private SierpinskiCarpet carpet;
+  /**
+   * constructor
+   * @param c the model carpet reference
+   */ 
+  public ButtonListener(SierpinskiCarpet c){
+    carpet = c;
+  }
+  /**
+   * send the message to the model what should be draw next
+   * @param e ActionEvent object
+   */ 
+  public void actionPerformed(ActionEvent e) {
+    JButton b =  (JButton)e.getSource();
+    if(b.getActionCommand().equals("UP")) carpet.lvlUp();
+    if(b.getActionCommand().equals("DOWN")) carpet.lvlDown();
+  }
+}

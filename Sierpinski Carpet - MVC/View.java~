@@ -1,0 +1,6 @@
+/**
+ * a public interface that defines the behavior of the viewers
+ */
+public interface View {
+  public void levelChanged();
+}

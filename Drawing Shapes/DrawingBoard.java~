@@ -1,0 +1,73 @@
+import java.awt.*;
+import java.util.*;
+/**
+ * 
+ * 
+ * @author Duong Chau
+ * @version HW2
+ */ 
+public class DrawingBoard {
+  private ArrayList<Shapes> shapeList;
+  private Shapes selected;
+  private int selectedIndex;
+  /**
+   * 
+   */ 
+  public void addShapes(Shapes shape){
+    shapeList.add(shape);
+    shapeList.get(shapeList.size() - 1).setSelected(true);
+    selected = shapeList.get(shapeList.size() - 1);
+    selectedIndex = shapeList.size() - 1;
+  }
+  /**
+   * 
+   * 
+   */ 
+  public void shapeSelect(int x, int y){
+    boolean found = false;
+    for(int i = shapeList.size() - 1; i >= 0 && !found; i--){
+      if(shapeList.get(i).isOn(x,y)){
+        selected = shapeList.get(i);
+        selectedIndex = i;
+        found = true;
+      }
+    }
+  }
+  /**
+   * 
+   */ 
+  public Shapes getSelected(){
+    return selected;
+  }
+  /**
+   * 
+   */ 
+  public void remove(){
+    if(selected == null) throw new IllegalStateException();
+    shapeList.remove(selectedIndex);
+    if(shapeList.size() != 0){
+      selected = shapeList.get(shapeList.size() - 1);
+    }
+  }
+  /**
+   * 
+   * @param color the color that the shape will be changed into
+   */ 
+  public void changeColor(Color color){
+    if(selected == null) throw new IllegalStateException();
+    selected.changeColor(color);
+  }
+  /**
+   * 
+   */
+  public void shift (int changeInX, int changeInY){
+    if(selected == null) throw new IllegalStateException();
+    selected.shiftBy(changeInX, changeInY);
+  }
+  /**
+   * @return a copy of the shapeList
+   */
+  public ArrayList<Shapes> copyList(){
+    return new ArrayList<Shapes>(shapeList);
+  }
+}

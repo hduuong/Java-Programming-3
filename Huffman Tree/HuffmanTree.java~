@@ -1,0 +1,240 @@
+import java.util.*;
+import java.io.*;
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.filechooser.*;
+/**
+ * 
+ * @author Duong H Chau
+ * @version HW6
+ */ 
+public class HuffmanTree {
+  private HNode root;
+  private Map<Character, HNode> characterMap;
+  private PriorityQueue<HNode> queue;
+  private String codeString;
+  private String message;
+  /**
+   * constructor
+   * constructs the Huffman Tree through reading a file
+   * and finding the frequency of each character.
+   * makes HNodes with values of frequency and character
+   * puts them in priority queue and also their combined frequency
+   */ 
+  public HuffmanTree(){
+    characterMap = new HashMap<Character, HNode>();
+    queue = new PriorityQueue<HNode>();
+    codeString = "";
+    //using the JFileChooser
+    File selectedFile = null;
+    JFileChooser fileChooser = new JFileChooser();
+    int returnValue = fileChooser.showOpenDialog(null);
+    if (returnValue == JFileChooser.APPROVE_OPTION) {
+      selectedFile = fileChooser.getSelectedFile();
+      System.out.println(selectedFile.getName());
+    }
+    //reading a file using scanner
+    try{
+      Scanner scan = new Scanner(selectedFile).useDelimiter("");
+      while(scan.hasNext()){
+        String string = scan.nextLine();
+        for(int i = 0; i < string.length(); i++){
+          Character cr = string.charAt(i);
+          if(!characterMap.containsKey(cr)){
+            HNode node = new HNode(cr,1);
+            characterMap.put(cr,node);
+          }else{
+            characterMap.get(cr).frequency++;
+          }
+        }
+      }
+      scan.close();
+    //if FileNotFoundException occurs stop the program  
+    }catch(FileNotFoundException e){
+      return;
+    }
+    //add all the HNodes from the map to the priority queue
+    Set<Character> set = characterMap.keySet();
+    Iterator it = set.iterator();
+    while(it.hasNext()){
+      queue.add(characterMap.get(it.next()));
+    }
+    //add the combined weight to the priority queue
+    while(queue.size() != 1){
+      HNode left = queue.poll();
+      HNode right = queue.poll();
+      queue.add(new HNode(left,right));
+    }
+    //assigns the root of the tree
+    root = queue.poll();
+    //assigns the code for the leaves
+    if(root.right == null && root.left == null){
+      root.code = "0";
+    }else{
+      root.left = findAllLeaves(root.left, "0");
+      root.right = findAllLeaves(root.right, "1");
+    }
+   // creates new sring that have code values represents
+   // the orginial text
+    try{
+      Scanner scan = new Scanner(selectedFile).useDelimiter("");
+      while(scan.hasNext()){
+        String string = scan.nextLine();
+        for(int i = 0; i < string.length(); i++){
+          Character cr = string.charAt(i);
+          codeString += characterMap.get(cr).code;
+        }
+      }
+      scan.close();
+    }catch(FileNotFoundException e){return;}
+  }
+  /**
+   * a private recursion method that does the traversal task
+   * visits every leaf node and encode them with a string
+   * @param node a root of a subtree
+   * @param str a representation of a code
+   * @return reference to the root of a subtree
+   */
+  private HNode findAllLeaves(HNode node,String str){
+    if(node.left == null && node.right == null){
+      node.code = str;
+      return node;
+    }
+    node.left = findAllLeaves(node.left, str + "0");
+    node.right = findAllLeaves(node.right, str + "1");
+    return node;
+  }
+  /**
+   * print the HuffmanTree
+   * public methods that uses a private recursive method
+   */
+  public void printHuffmanTree(){
+    System.out.println("node (" + root.frequency + ")");
+    if(root.left!=null && root.right!=null){
+      privatePrintTree("     ",root.left);
+      privatePrintTree("     ",root.right);
+    }
+  }
+  /**
+   * private method that helps prints the tree recursively
+   * @param space add space to the S.O.P depends on level of tree
+   * @param node the root node of a subtrees or a leave
+   */
+  private void privatePrintTree(String space,HNode node){
+    String str = "     ";
+    if(node.left == null && node.right == null){
+      System.out.println(space + "node (" + node.frequency + ") '"+node.character+"'");
+    }else{
+      System.out.println(space + "node (" + node.frequency + ")");
+      privatePrintTree(space + str,node.left);
+      privatePrintTree(space + str,node.right);
+    }
+  }
+  /**
+   * print the look up table for all characters in the tree
+   */ 
+  public void printLookUpTable(){
+    Set<Character> set = characterMap.keySet();
+    Iterator it = set.iterator();
+    while(it.hasNext()){
+      Character key = (Character)it.next();
+      System.out.println("'"+key+"'" +"    "+ characterMap.get(key).code );
+    }
+  }
+  /**
+   * print the code string
+   * the string that represents the original string
+   */ 
+  public void printCode(){
+    System.out.println(codeString);
+  }
+  /**
+   * print the character and frequency table
+   */ 
+  public void printFrequencyTable(){
+    for (Map.Entry<Character, HNode> entry : characterMap.entrySet()) {
+      HNode node = entry.getValue();
+      System.out.println(node.character + "    " + Integer.toString(node.frequency));
+    }
+  }
+  /**
+   * Makes thes the orgininal message from the codeString
+   * prints the message
+   */
+  public void printMessage(){
+    message = "";
+    String str = codeString.substring(0);
+    HNode node = root;
+    //the loop stops right after it reaches the last node
+    while(str.length() != 0){
+      String number = str.substring(0,1);
+      //stores the character value into the message if
+      //reaches leaves - sets node back to roots
+      if(node.left == null && node.right == null){
+        message += node.character;
+        node = root;
+      }
+      //goes the the right if 1 - left if otherwise
+      if(number.equals("1")){
+        node = node.right;
+      }else{
+        node = node.left;
+      }
+      //update so can get to the next number
+      str = str.substring(1);
+    }
+    //add the last character to the message
+    message += node.character;
+    System.out.println(message);
+  }
+  /**
+   * main method that allows the program to run
+   * 
+   * @param args a string argument
+   */
+  public static void main(String[] args){
+    HuffmanTree tree = new HuffmanTree();
+    tree.printFrequencyTable();
+    tree.printHuffmanTree();
+    tree.printLookUpTable();
+    tree.printCode();
+    tree.printMessage();
+  }
+  /**
+   * an inner class HNode
+   * 
+   */ 
+  class HNode implements Comparable<HNode>{
+    private char character;
+    private int frequency;
+    private HNode left,right;
+    private String code;
+    public HNode(){}
+    /**
+     * 
+     */ 
+    public HNode(char c, int f){
+      character = c;
+      frequency = f;
+    }
+    /**
+     * 
+     */ 
+    public HNode(HNode l, HNode r){
+      frequency = l.frequency + r.frequency;
+      left = l;
+      right = r;
+    }
+    /**
+     * implements the compareTo method
+     * 
+     * @param node the node that need to be compared
+     */ 
+    public int compareTo(HNode node){
+      if(frequency - node.frequency == 0) return 0;
+      if(frequency - node.frequency < 0) return -1;
+      else return 1;
+    }
+  }
+}
